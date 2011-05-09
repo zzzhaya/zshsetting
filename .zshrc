@@ -132,6 +132,11 @@ bindkey "^x " no-magic-abbrev-expand
 #zle -N cdup
 #bindkey '\^' cdup
 
+#http://d.hatena.ne.jp/rubikitch/20070925#zshcheatsheet
+cheat-sheet () { zle -M "`cat ~/zshsetting/cheat-sheet`" }
+zle -N cheat-sheet
+bindkey "^[^h" cheat-sheet
+
 #http://www.jmuk.org/diary/2007/02/23/2
 setopt SUN_KEYBOARD_HACK
 
