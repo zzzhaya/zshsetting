@@ -47,8 +47,8 @@ setopt magic_equal_subst # コマンドラインの引数で --prefix=/usr な�
 setopt print_eightbit # 8 ビット目を通すようになり、日本語のファイル名などを見れるようになる
 
 ## global alias
-alias -g L="| less"
-alias -g G="| grep"
+#alias -g L="| less"
+#alias -g G="| grep"
 alias pld="perldoc"
 alias ls="ls -Ga"
 alias sl="ls -lGa"
@@ -76,6 +76,50 @@ setopt prompt_subst
 
 # globを拡張する。
 setopt extended_glob
+#http://subtech.g.hatena.ne.jp/cho45/20080617/1213629154
+typeset -A abbreviations
+abbreviations=(
+"L"    "| $PAGER"
+"G"    "| grep"
+
+"HEAD^"     "HEAD\\^"
+"HEAD^^"    "HEAD\\^\\^"
+"HEAD^^^"   "HEAD\\^\\^\\^"
+"HEAD^^^^"  "HEAD\\^\\^\\^\\^\\^"
+"HEAD^^^^^" "HEAD\\^\\^\\^\\^\\^"
+)
+
+magic-abbrev-expand () {
+	local MATCH
+	LBUFFER=${LBUFFER%%(#m)[-_a-zA-Z0-9^]#}
+	LBUFFER+=${abbreviations[$MATCH]:-$MATCH}
+}
+
+magic-abbrev-expand-and-insert () {
+	magic-abbrev-expand
+	zle self-insert
+}
+
+magic-abbrev-expand-and-accept () {
+	magic-abbrev-expand
+	zle accept-line
+}
+
+no-magic-abbrev-expand () {
+	LBUFFER+=' '
+}
+
+zle -N magic-abbrev-expand
+zle -N magic-abbrev-expand-and-insert
+zle -N magic-abbrev-expand-and-accept
+zle -N no-magic-abbrev-expand
+bindkey "\r"  magic-abbrev-expand-and-accept # M-x RET はできなくなる
+bindkey "^J"  accept-line # no magic
+bindkey " "   magic-abbrev-expand-and-insert
+bindkey "."   magic-abbrev-expand-and-insert
+bindkey "^x " no-magic-abbrev-expand
+
+
 # 10分後に自動的にログアウトする。
 #setopt autologout=10
 
